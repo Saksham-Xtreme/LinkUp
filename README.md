@@ -172,13 +172,3 @@ This project is open source and available under the MIT License.
 Developed by Saksham Tripathi
 Computer Science Engineering Student | Full Stack Developer
 
-
----
-
-If you want, I can also give you **3 sections that make a README look “startup-level”**:
-
-- **System Design Diagram**
-- **WebRTC Signaling Flow**
-- **Screenshots section**
-
-These make your repo look **far more impressive to recruiters.**
