@@ -80,14 +80,17 @@ export default function Authentication() {
 
         <CssBaseline />
 
-        {/* Left Background Section */}
+        {/* Left Background Section - FIXED IMAGE PATHING */}
         <Grid
           item
           xs={12}
           md={7}
-          className="auth-background"
           sx={{ 
-            display: { xs: 'none', md: 'block' }
+            display: { xs: 'none', md: 'block' },
+            backgroundImage: 'url("/Background.png")',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
           }}
         />
 

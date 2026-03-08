@@ -1,16 +1,21 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
 export default function ProtectedRoute({ children }) {
-  // Check if the user has a token saved from logging in
-  const token = localStorage.getItem("token");
+  const location = useLocation();
 
-  // If no token is found, redirect them to the auth page
-  if (!token) {
-    // 'replace' prevents them from hitting the back button to return to the protected route
+  // 1. Check if they already have a saved token
+  const localToken = localStorage.getItem("token");
+
+  // 2. Check if Google just sent them back with a token in the URL
+  const params = new URLSearchParams(location.search);
+  const urlToken = params.get("token");
+
+  // If they have NEITHER, kick them to the login screen
+  if (!localToken && !urlToken) {
     return <Navigate to="/auth" replace />;
   }
 
-  // If they have a token, render the requested page
+  // Otherwise, let them through (Home.jsx will handle saving the urlToken)
   return children;
 }
