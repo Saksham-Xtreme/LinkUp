@@ -1,0 +1,204 @@
+/* =========================
+   Page Layout
+========================= */
+
+.auth-page {
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    background-color: #f9fafb; /* Fallback background */
+}
+
+/* =========================
+   Background Section
+========================= */
+
+.auth-background {
+    background-image: url("/Background.png"); /* Updated path */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh;
+    position: relative;
+}
+
+.auth-background::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    /* Gave the gradient a slight angle for a more dynamic look */
+    background: linear-gradient(
+        135deg,
+        rgba(15, 23, 42, 0.75),
+        rgba(15, 23, 42, 0.95)
+    );
+}
+
+/* =========================
+   Right Authentication Panel
+========================= */
+
+.auth-panel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #ffffff;
+    padding: 2rem;
+    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.05); /* Subtle shadow bridging the split */
+}
+
+/* =========================
+   Form Container
+========================= */
+
+.auth-form-container {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* =========================
+   Toggle Buttons
+========================= */
+
+.auth-toggle {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    width: 100%;
+}
+
+.auth-toggle button {
+    flex: 1;
+    font-weight: 600;
+    padding: 10px 0;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+}
+
+/* =========================
+   Form Elements
+========================= */
+
+.auth-form {
+    width: 100%;
+    margin-top: 16px;
+}
+
+.auth-submit-btn {
+    margin-top: 24px !important;
+    padding: 12px !important;
+    border-radius: 8px !important;
+    font-weight: bold !important;
+    text-transform: none !important; /* Removes default MUI uppercase */
+    font-size: 1rem !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.auth-submit-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* =========================
+   Error Styling
+========================= */
+
+.auth-error {
+    color: #d32f2f;
+    font-size: 0.875rem;
+    margin-top: 8px;
+    text-align: center;
+    font-weight: 500;
+    min-height: 20px; /* Prevents layout shift when error appears */
+}
+
+/* =========================
+   Divider
+========================= */
+
+.auth-divider {
+    text-align: center;
+    margin: 24px 0;
+    position: relative;
+    color: #6b7280;
+}
+
+/* Modern line divider with "OR" in the middle */
+.auth-divider::before,
+.auth-divider::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 42%;
+    height: 1px;
+    background-color: #e5e7eb;
+}
+
+.auth-divider::before { left: 0; }
+.auth-divider::after { right: 0; }
+
+/* =========================
+   Google Button
+========================= */
+
+.google-btn {
+    border-radius: 8px !important;
+    padding: 10px !important;
+    border-color: #d1d5db !important;
+    color: #374151 !important;
+    background-color: #ffffff !important;
+    font-weight: 600 !important;
+    text-transform: none !important;
+    transition: all 0.2s ease !important;
+}
+
+.google-btn:hover {
+    background-color: #f9fafb !important;
+    border-color: #9ca3af !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* =========================
+   Avatar Enhancement
+========================= */
+
+.MuiAvatar-root {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    width: 52px !important;
+    height: 52px !important;
+    margin-bottom: 8px !important;
+}
+
+/* =========================
+   Animations
+========================= */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 900px) {
+    .auth-background {
+        display: none;
+    }
+    
+    .auth-panel {
+        padding: 1.5rem;
+    }
+}

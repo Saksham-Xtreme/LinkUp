@@ -4,72 +4,64 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 const login = async (req, res) => {
+  const { username, password } = req.body;
 
-    const { username, password } = req.body;
-  
-    if (!username || !password) {
-      return res
-        .status(httpStatus.BAD_REQUEST)
-        .json({ message: "All fields are required" });
-    }
-  
-    try {
-  
-      const user = await User.findOne({ username });
-  
-      if (!user) {
-        return res
-          .status(httpStatus.NOT_FOUND)
-          .json({ message: "User not found" });
-      }
-  
-      const isMatch = await bcrypt.compare(password, user.password);
-  
-      if (!isMatch) {
-        return res
-          .status(httpStatus.UNAUTHORIZED)
-          .json({ message: "Invalid credentials" });
-      }
-  
-      const token = jwt.sign(
-        {
-          id: user._id,
-          username: user.username
-        },
-        process.env.JWT_SECRET,
-        {
-          expiresIn: process.env.JWT_EXPIRES_IN
-        }
-      ); 
+  if (!username || !password) {
+    return res
+      .status(httpStatus.BAD_REQUEST)
+      .json({ message: "All fields are required" });
+  }
 
-    
-  
-      return res.status(httpStatus.OK).json({
-        message: "Login successful",
-        token,
-        user: {
-          id: user._id,
-          username: user.username,
-          name: user.name,
-          
-        }
-      });
-  
-    } catch (error) {
-  
+  try {
+    const user = await User.findOne({ username });
+
+    if (!user) {
       return res
-        .status(httpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: "Something went wrong" });
-  
+        .status(httpStatus.NOT_FOUND)
+        .json({ message: "User not found" });
     }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res
+        .status(httpStatus.UNAUTHORIZED)
+        .json({ message: "Invalid credentials" });
+    }
+
+    const token = jwt.sign(
+      {
+        id: user._id,
+        username: user.username
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: process.env.JWT_EXPIRES_IN
+      }
+    ); 
+
+    return res.status(httpStatus.OK).json({
+      message: "Login successful",
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        name: user.name,
+      }
+    });
+
+  } catch (error) {
+    console.error("Login Error:", error);
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .json({ message: "Something went wrong" });
+  }
 };
 
 const register = async (req, res) => {
-
   const { name, username, email, password } = req.body;
 
   try {
-
     if (!name || !username || !email || !password) {
       return res
         .status(httpStatus.BAD_REQUEST)
@@ -97,18 +89,16 @@ const register = async (req, res) => {
   
     await newUser.save();
 
-    res
+    return res
       .status(httpStatus.CREATED)
       .json({ message: "User registered successfully" });
 
   } catch (error) {
-
-    res
+    console.error("Registration Error:", error);
+    return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
       .json({ message: "Something went wrong" });
-
   }
-
 };
 
-export { login , register };
+export { login, register };

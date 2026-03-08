@@ -1,87 +1,436 @@
-/* Main Layout */
+/* -----------------------------------
+   Global Layout & Reset
+-------------------------------------- */
 .landingPageContainer {
   height: 100vh;
   width: 100vw; 
-  background: url("./public/Background.png") center center;
+  background: url("/Background.png") center center;
+  background-color: #111827; /* Dark fallback background */
   background-repeat: no-repeat;
   background-size: cover;
   color: white;
   margin: 0;
-  overflow-x: hidden;
+  overflow: hidden; /* Prevents scrolling from the wave animation */
   display: flex;
-  flex-direction: column; /* Stacks the nav and the main container vertically */
+  flex-direction: column;
+  position: relative; /* Keeps the wave background contained */
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
-/* Navigation Bar */
+/* -----------------------------------
+   Navigation Bar
+-------------------------------------- */
 .landingPageContainer nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 20px 5%;
-  background: rgba(0, 0, 0, 0.2); /* Slight overlay for text readability */
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.25); 
+  backdrop-filter: blur(8px);
+  position: relative;
+  z-index: 10; /* Ensures nav stays above the wave */
 }
 
-/* Logo / Header */
-.navHeader h2 {
-  margin: 0;
-  font-size: 2rem;
-  font-weight: bold;
-  letter-spacing: 1px;
+/* Logo & Title */
+.navHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px; 
   cursor: pointer;
 }
 
-/* Navigation Links Container */
+.navLogo {
+  height: 40px; 
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.navLogo:hover {
+  transform: scale(1.1);
+}
+
+.navHeader .Title {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Nav Links Container */
 .navList {
   display: flex;
   align-items: center;
   gap: 30px;
 }
 
-/* Individual Links */
-.navList p {
-  margin: 0;
-  font-size: 1.1rem;
+/* Join & Register Buttons */
+.Join, .RegisterButton {
+  background: transparent;
+  border: none;
+  color: #e2e8f0;
+  font-size: 1.05rem;
   font-weight: 500;
   cursor: pointer;
-  transition: opacity 0.2s ease-in-out;
+  transition: color 0.2s ease, transform 0.2s ease;
+  padding: 0;
 }
 
-.navList p:hover {
-  opacity: 0.7;
+.Join:hover, .RegisterButton:hover {
+  color: white;
+  transform: translateY(-1px);
 }
 
 /* Login Button */
 .LoginButton {
-  background-color: #3b82f6; /* Modern primary blue */
+  background-color: #3b82f6; 
+  color: white;
   padding: 10px 24px;
-  border-radius: 9999px; /* Fully rounded pill shape */
+  border: none;
+  border-radius: 9999px; 
+  font-size: 1.05rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.LoginButton:hover {
+  background-color: #2563eb; 
+  transform: translateY(-2px); 
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+/* -----------------------------------
+   Main Hero Section
+-------------------------------------- */
+.landingMainContainer {
+  flex: 1; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center; 
+  padding: 0 5%;
+  gap: 35px; 
+  text-align: center;
+  position: relative;
+  z-index: 5; /* Keeps content above the wave */
+}
+
+/* Hero Heading with Gradient Text */
+.Hero-name {
+  font-size: 4.5rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: 1px;
+  background: linear-gradient(to right, #ffffff, #93c5fd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4); 
+}
+
+/* Center Logo with Floating Animation */
+.Logo-img {
   display: flex;
   justify-content: center;
   align-items: center;
+  animation: float 6s ease-in-out infinite; /* Continuous floating */
 }
 
-/* Login Button Text */
-.LoginButton p {
-  margin: 0;
+.Logo-img img {
+  max-width: 260px; 
+  height: auto;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4)); 
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.4s ease; 
+}
+
+.Logo-img img:hover {
+  transform: scale(1.1) rotate(-3deg); /* Slight tilt on hover */
+  filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.6)); 
+}
+
+/* Get Started Button (React Router Link) */
+.OpenButton {
+  background-color: #10b981; 
   color: white;
-  font-weight: 600;
+  text-decoration: none; /* Removes underline from <Link> */
+  font-size: 1.25rem;
+  font-weight: 700;
+  padding: 16px 48px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+  cursor: pointer;  
+  display: inline-block;
+  margin-top: 10px;
 }
 
-/* Login Button Hover State */
-.LoginButton:hover {
-  background-color: #2563eb; /* Darker blue */
-  transform: translateY(-2px); /* Slight lift effect */
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+.OpenButton:hover {
+  background-color: #059669; 
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.5);
 }
 
-.landingMainContainer {
-  flex: 1; /* Takes up all remaining vertical space below the nav */
+.OpenButton:active {
+  transform: translateY(1px);
+}
+
+/* -----------------------------------
+   Backgrounds & Animations
+-------------------------------------- */
+/* Main Logo Floating Keyframes */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
+}
+
+/* Pure CSS Wave Effect */
+.waveBackground {
+  position: absolute;
+  bottom: -150px;
+  left: -10%;
+  width: 120vw;
+  height: 400px;
+
+  background: radial-gradient(ellipse at top, #3b82f6 0%, transparent 70%);
+  opacity: 0.25;
+
+  border-radius: 50%;
+
+  animation: wavePulse 8s ease-in-out infinite alternate;
+
+  filter: blur(20px);
+
+  z-index: 0;
+
+  pointer-events: none;   /* FIX */
+}
+/* Wave Pulsing Keyframes */
+@keyframes wavePulse {
+  0% { transform: scaleY(1) translateY(0); }
+  100% { transform: scaleY(1.3) translateY(-30px); opacity: 0.4; }
+}
+
+/* -----------------------------------
+   Mobile Responsiveness
+-------------------------------------- */
+@media screen and (max-width: 768px) {
+  .landingPageContainer nav {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .Hero-name {
+    font-size: 2.8rem;
+  }
+
+  .Logo-img img {
+    max-width: 180px;
+  }
+}
+
+
+/* =========================
+   Page Layout
+========================= */
+
+.auth-page {
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background-color: #f9fafb; /* Fallback background */
+}
+
+/* =========================
+ Background Section
+========================= */
+
+.auth-background {
+  background-image: url("/Background.png"); /* Updated path */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  position: relative;
+}
+
+.auth-background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Gave the gradient a slight angle for a more dynamic look */
+  background: linear-gradient(
+      135deg,
+      rgba(15, 23, 42, 0.75),
+      rgba(15, 23, 42, 0.95)
+  );
+}
+
+/* =========================
+ Right Authentication Panel
+========================= */
+
+.auth-panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #ffffff;
+  padding: 2rem;
+  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.05); /* Subtle shadow bridging the split */
+}
+
+/* =========================
+ Form Container
+========================= */
+
+.auth-form-container {
+  width: 100%;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Centers content vertically */
-  align-items: center; /* Centers content horizontally */
-  padding: 0 5%;
+  align-items: center;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* =========================
+ Toggle Buttons
+========================= */
+
+.auth-toggle {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  width: 100%;
+}
+
+.auth-toggle button {
+  flex: 1;
+  font-weight: 600;
+  padding: 10px 0;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+}
+
+/* =========================
+ Form Elements
+========================= */
+
+.auth-form {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.auth-submit-btn {
+  margin-top: 24px !important;
+  padding: 12px !important;
+  border-radius: 8px !important;
+  font-weight: bold !important;
+  text-transform: none !important; /* Removes default MUI uppercase */
+  font-size: 1rem !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.auth-submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* =========================
+ Error Styling
+========================= */
+
+.auth-error {
+  color: #d32f2f;
+  font-size: 0.875rem;
+  margin-top: 8px;
+  text-align: center;
+  font-weight: 500;
+  min-height: 20px; /* Prevents layout shift when error appears */
+}
+
+/* =========================
+ Divider
+========================= */
+
+.auth-divider {
+  text-align: center;
+  margin: 24px 0;
+  position: relative;
+  color: #6b7280;
+}
+
+/* Modern line divider with "OR" in the middle */
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 42%;
+  height: 1px;
+  background-color: #e5e7eb;
+}
+
+.auth-divider::before { left: 0; }
+.auth-divider::after { right: 0; }
+
+/* =========================
+ Google Button
+========================= */
+
+.google-btn {
+  border-radius: 8px !important;
+  padding: 10px !important;
+  border-color: #d1d5db !important;
+  color: #374151 !important;
+  background-color: #ffffff !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.google-btn:hover {
+  background-color: #f9fafb !important;
+  border-color: #9ca3af !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* =========================
+ Avatar Enhancement
+========================= */
+
+.MuiAvatar-root {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  width: 52px !important;
+  height: 52px !important;
+  margin-bottom: 8px !important;
+}
+
+/* =========================
+ Animations
+========================= */
+
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translateY(10px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+/* =========================
+ Responsive
+========================= */
+
+@media (max-width: 900px) {
+  
+  
+  .auth-panel {
+      padding: 1.5rem;
+  }
 }
