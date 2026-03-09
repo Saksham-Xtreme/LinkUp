@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken";
 
 const router = express.Router();
 
+const CLIENT_URL = process.env.CLIENT_URL;
+
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
@@ -11,10 +13,13 @@ router.get(
 
 router.get(
   "/google/callback",
-  // Added failureRedirect so if Google auth fails, it safely sends them back to your login page
-  passport.authenticate("google", { session: false, failureRedirect: "http://localhost:5173/auth?error=GoogleAuthFailed" }),
+  passport.authenticate("google", {
+    session: false,
+    failureRedirect: `${CLIENT_URL}auth?error=GoogleAuthFailed`
+  }),
   (req, res) => {
     try {
+
       const token = jwt.sign(
         {
           id: req.user._id,
@@ -24,12 +29,14 @@ router.get(
         { expiresIn: process.env.JWT_EXPIRES_IN }
       );
 
-      // Redirect back to your React frontend, passing the token in the URL
-      res.redirect(`http://localhost:5173/home?token=${token}`);
+      res.redirect(`${CLIENT_URL}home?token=${token}`);
 
     } catch (error) {
+
       console.error("Google Auth Token Generation Error:", error);
-      res.redirect("http://localhost:5173/auth?error=TokenGenerationFailed");
+
+      res.redirect(`${CLIENT_URL}auth?error=TokenGenerationFailed`);
+
     }
   }
 );

@@ -10,15 +10,16 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:8000/auth/google/callback"
+      callbackURL: `${process.env.SERVER_URL}auth/google/callback`
     },
+    
     async (accessToken, refreshToken, profile, done) => {
-
       try {
 
         const email = profile.emails[0].value;
 
         let user = await User.findOne({ email });
+        
 
         if (!user) {
           user = await User.create({
@@ -29,19 +30,12 @@ passport.use(
           });
         }
 
-        console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
-
         return done(null, user);
-
-        
 
       } catch (error) {
         return done(error, null);
       }
-
-
     }
-
   )
 );
 
