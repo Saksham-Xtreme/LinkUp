@@ -28,7 +28,7 @@ router.get(
       );
 
       // Fix 2: Added the slash before "home"
-      res.redirect(`${process.env.CLIENT_URL}/home?token=${token}`);
+      res.redirect(`${process.env.CLIENT_URL}home?token=${token}`);
 
     } catch (error) {
       console.error("Google Auth Token Generation Error:", error);
