@@ -10,7 +10,10 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: `${process.env.SERVER_URL}/auth/google/callback`
+      // Added the slash here to guarantee a clean URL string
+      callbackURL: `${process.env.SERVER_URL}/auth/google/callback`,
+      // THIS IS MANDATORY FOR DEPLOYING ON RENDER
+      proxy: true 
     },
     
     async (accessToken, refreshToken, profile, done) => {
@@ -20,13 +23,18 @@ passport.use(
 
         let user = await User.findOne({ email });
         
-
         if (!user) {
+          // --- THE FIX: Generate a unique username from the email ---
+          const baseUsername = email.split('@')[0]; // Gets "msdhoni21998"
+          const randomNum = Math.floor(1000 + Math.random() * 9000); // Adds 4 random digits
+          const generatedUsername = `${baseUsername}${randomNum}`;
+
           user = await User.create({
             name: profile.displayName,
             email: email,
             googleId: profile.id,
-            avatar: profile.photos[0].value
+            avatar: profile.photos[0].value,
+            username: generatedUsername // <-- Now MongoDB gets a unique string!
           });
         }
 
