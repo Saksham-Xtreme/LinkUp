@@ -127,7 +127,5 @@ EMAIL_PASS=your_app_specific_password
 
 **Saksham Tripathi** *Full Stack Developer | Computer Science Engineering Student* [GitHub](https://www.google.com/search?q=https://github.com/Saksham-Xtreme) | [LinkedIn](https://www.google.com/search?q=https://www.linkedin.com/in/saksham-tripathi-303728282/)
 
----
 
-### Pro-Tip for your README:
 
