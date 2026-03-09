@@ -16,7 +16,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
 import ChatIcon from '@mui/icons-material/Chat';
-import CloseIcon from '@mui/icons-material/Close'; // Imported Close Icon
+import CloseIcon from '@mui/icons-material/Close'; 
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from "../styles/videoComponent.module.css";
 import { useAuth } from "../contexts/AuthContext";
@@ -50,7 +50,7 @@ export default function VideoMeet() {
     let [screenAvailable, setScreenAvailable] = useState();
     let [messages, setMessages] = useState([]);
     let [message, setMessage] = useState("");
-    let [newMessages, setNewMessages] = useState(0); // Start at 0
+    let [newMessages, setNewMessages] = useState(0); 
     let [askForUsername, setAskForUsername] = useState(true);
     let [username, setUsername] = useState("");
     const videoRef = useRef([]);
@@ -144,7 +144,10 @@ export default function VideoMeet() {
         for (let id in connections) {
             if (id === socketIdRef.current) continue
 
-            connections[id].addStream(window.localStream)
+            // FIX: Modern WebRTC Track implementation
+            window.localStream.getTracks().forEach(track => {
+                connections[id].addTrack(track, window.localStream);
+            });
 
             connections[id].createOffer().then((description) => {
                 connections[id].setLocalDescription(description)
@@ -169,7 +172,10 @@ export default function VideoMeet() {
             localVideoref.current.srcObject = window.localStream
 
             for (let id in connections) {
-                connections[id].addStream(window.localStream)
+                // FIX: Modern WebRTC Track implementation
+                window.localStream.getTracks().forEach(track => {
+                    connections[id].addTrack(track, window.localStream);
+                });
 
                 connections[id].createOffer().then((description) => {
                     connections[id].setLocalDescription(description)
@@ -207,7 +213,10 @@ export default function VideoMeet() {
         for (let id in connections) {
             if (id === socketIdRef.current) continue
 
-            connections[id].addStream(window.localStream)
+            // FIX: Modern WebRTC Track implementation for screen share
+            window.localStream.getTracks().forEach(track => {
+                connections[id].addTrack(track, window.localStream);
+            });
 
             connections[id].createOffer().then((description) => {
                 connections[id].setLocalDescription(description)
@@ -245,13 +254,14 @@ export default function VideoMeet() {
             }
         }
 
-        connections[socketListId].onaddstream = (event) => {
+        // Modern browsers use ontrack instead of onaddstream
+        connections[socketListId].ontrack = (event) => {
             let videoExists = videoRef.current.find(video => video.socketId === socketListId);
 
             if (videoExists) {
                 setVideos(videos => {
                     const updatedVideos = videos.map(video =>
-                        video.socketId === socketListId ? { ...video, stream: event.stream } : video
+                        video.socketId === socketListId ? { ...video, stream: event.streams[0] } : video
                     );
                     videoRef.current = updatedVideos;
                     return updatedVideos;
@@ -259,7 +269,7 @@ export default function VideoMeet() {
             } else {
                 let newVideo = {
                     socketId: socketListId,
-                    stream: event.stream,
+                    stream: event.streams[0], 
                     autoplay: true,
                     playsinline: true
                 };
@@ -272,12 +282,17 @@ export default function VideoMeet() {
             }
         };
 
+        // FIX: The ultimate track handler with a solid fallback
         if (window.localStream !== undefined && window.localStream !== null) {
-            connections[socketListId].addStream(window.localStream);
+            window.localStream.getTracks().forEach(track => {
+                connections[socketListId].addTrack(track, window.localStream);
+            });
         } else {
             let blackSilence = (...args) => new MediaStream([black(...args), silence()]);
             window.localStream = blackSilence();
-            connections[socketListId].addStream(window.localStream);
+            window.localStream.getTracks().forEach(track => {
+                connections[socketListId].addTrack(track, window.localStream);
+            });
         }
     };
 
@@ -306,7 +321,8 @@ export default function VideoMeet() {
     }
 
     let connectToSocketServer = () => {
-        socketRef.current = io.connect(server_url, { secure: false })
+        // FIX: Removed { secure: false } for Render deployment
+        socketRef.current = io(server_url, { transports: ['websocket', 'polling'] });
 
         socketRef.current.on('signal', gotMessageFromServer)
 
@@ -331,8 +347,13 @@ export default function VideoMeet() {
                     for (let id2 in connections) {
                         if (id2 === socketIdRef.current) continue
 
+                        // FIX: Final legacy addStream replacement
                         try {
-                            connections[id2].addStream(window.localStream)
+                            if(window.localStream) {
+                                window.localStream.getTracks().forEach(track => {
+                                    connections[id2].addTrack(track, window.localStream);
+                                });
+                            }
                         } catch (e) { }
 
                         connections[id2].createOffer().then((description) => {
@@ -386,7 +407,6 @@ export default function VideoMeet() {
     let closeChat = () => setModal(false);
 
     const addMessage = (data, sender, socketIdSender) => {
-        // Prevent duplicate messages: If the server echoes our own message back to us, ignore it.
         if (socketIdSender === socketIdRef.current) {
             return; 
         }
@@ -396,23 +416,19 @@ export default function VideoMeet() {
             { sender: sender, data: data }
         ]);
         
-        // Since we ignored our own messages above, any message that makes it here is from someone else.
         setNewMessages((prevNewMessages) => prevNewMessages + 1);
     };
 
     let sendMessage = () => {
-        if (message.trim() === "") return; // Don't send empty messages
+        if (message.trim() === "") return; 
 
-        // Broadcast to others
         socketRef.current.emit('chat-message', message, username);
         
-        // Add instantly to local state
         setMessages((prevMessages) => [
             ...prevMessages,
             { sender: username, data: message }
         ]);
 
-        // Clear input
         setMessage("");
     }
 
@@ -461,12 +477,10 @@ export default function VideoMeet() {
             :
                 <div className={styles.meetVideoContainer}>
                     
-                    {/* Corrected Chat Modal */}
                     {showModal ? (
                         <div className={styles.chatRoom}>
                             <div className={styles.chatContainer}>
                                 
-                                {/* 1. Header with Close Button */}
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '15px', marginBottom: '20px' }}>
                                     <h1 style={{ margin: 0, padding: 0, border: 'none', color: '#fff', fontSize: '1.4rem' }}>Chat</h1>
                                     <IconButton onClick={closeChat} style={{ color: "white", padding: 0 }}>
@@ -474,7 +488,6 @@ export default function VideoMeet() {
                                     </IconButton>
                                 </div>
 
-                                {/* 2. Message Display */}
                                 <div className={styles.chattingDisplay}>
                                     {messages.length !== 0 ? messages.map((item, index) => {
                                         return (
@@ -486,7 +499,6 @@ export default function VideoMeet() {
                                     }) : <p style={{ color: 'rgba(255,255,255,0.5)', textAlign: 'center' }}>No Messages Yet</p>}
                                 </div>
 
-                                {/* 3. Input Area */}
                                 <div className={styles.chattingArea}>
                                     <TextField 
                                         value={message} 
@@ -510,7 +522,6 @@ export default function VideoMeet() {
                         </div>
                     ) : null}
 
-                    {/* Control Buttons */}
                     <div className={styles.buttonContainers}>
                         <IconButton 
                             onClick={handleVideo} 
@@ -547,7 +558,7 @@ export default function VideoMeet() {
                             <IconButton 
                                 onClick={() => {
                                     setModal(!showModal);
-                                    if(!showModal) setNewMessages(0); // Reset badge when opening chat
+                                    if(!showModal) setNewMessages(0); 
                                 }} 
                                 className={showModal ? styles.controlBtnOff : styles.controlBtn}
                             >
