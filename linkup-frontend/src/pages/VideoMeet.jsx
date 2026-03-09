@@ -9,9 +9,10 @@ import MicOffIcon from '@mui/icons-material/MicOff';
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
 import ChatIcon from '@mui/icons-material/Chat';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom'; // IMPORT useParams
 import styles from "../styles/videoComponent.module.css";
- 
+import { useAuth } from "../contexts/AuthContext"; // IMPORT useAuth hook
+
 const server_url = "http://localhost:8000";
 
 var connections = {};
@@ -24,6 +25,10 @@ const peerConfigConnections = {
 
 export default function VideoMeet() {
     const navigate = useNavigate(); 
+    // 1. Grab the current room code from the URL (e.g., /room/x7b9a2kq)
+    const { url } = useParams(); 
+    // 2. Pull our history function from context
+    const { addToUserHistory } = useAuth();
 
     var socketRef = useRef();
     let socketIdRef = useRef();
@@ -31,7 +36,7 @@ export default function VideoMeet() {
 
     let [videoAvailable, setVideoAvailable] = useState(true);
     let [audioAvailable, setAudioAvailable] = useState(true);
-    let [video, setVideo] = useState([]);
+    let [video, setVideo] = useState(true); // Changed from array [] to true
     let [audio, setAudio] = useState();
     let [screen, setScreen] = useState();
     let [showModal, setModal] = useState(true);
@@ -56,6 +61,8 @@ export default function VideoMeet() {
         }
         getPermissions();
     }, []);
+
+    // ... (Your getPermissions, getMedia, getUserMedia functions remain unchanged) ...
 
     let getDislayMedia = () => {
         if (screen) {
@@ -217,9 +224,8 @@ export default function VideoMeet() {
         })
     }
 
-    // --- FIX 1: Abstracted connection creation to prevent race conditions ---
     const createConnection = (socketListId) => {
-        if (connections[socketListId]) return; // Skip if already created
+        if (connections[socketListId]) return; 
 
         connections[socketListId] = new RTCPeerConnection(peerConfigConnections);
         
@@ -269,7 +275,6 @@ export default function VideoMeet() {
         var signal = JSON.parse(message)
 
         if (fromId !== socketIdRef.current) {
-            // FIX 2: Ensure connection exists before trying to apply an offer/answer to it
             createConnection(fromId);
 
             if (signal.sdp) {
@@ -306,7 +311,6 @@ export default function VideoMeet() {
             })
 
             socketRef.current.on('user-joined', (id, clients) => {
-                // Safely handle if backend forgets to send the clients array
                 const clientsArray = Array.isArray(clients) ? clients : [id];
 
                 clientsArray.forEach((socketListId) => {
@@ -392,23 +396,50 @@ export default function VideoMeet() {
         setMessage("");
     }
 
-    let connect = () => {
+    // 3. UPDATED CONNECT FUNCTION
+    let connect = async () => {
         setAskForUsername(false);
         getMedia();
+        
+        // Log this meeting to the database using the URL parameter
+        if (url) {
+            try {
+                await addToUserHistory(url);
+                console.log("Meeting logged to history");
+            } catch (error) {
+                console.error("Could not log meeting:", error);
+            }
+        }
     }
 
     return (
         <div>
             {askForUsername === true ?
-                <div>
-                    <h2>Enter into Lobby </h2>
-                    <TextField id="outlined-basic" label="Username" value={username} onChange={e => setUsername(e.target.value)} variant="outlined" />
-                    <Button variant="contained" onClick={connect}>Connect</Button>
-
-                    <div>
+                <div className={styles.OpenLobby}>
+                    <h2 className={styles.Lobbytitle}>Enter into Lobby</h2>
+                    
+                    <TextField 
+                        id="outlined-basic" 
+                        className={styles.LobbyUsername} 
+                        label="Username" 
+                        value={username} 
+                        onChange={e => setUsername(e.target.value)} 
+                        variant="outlined" 
+                        fullWidth
+                    />
+                    
+                    <Button 
+                        variant="contained" 
+                        className={styles.LobbyConnect} 
+                        onClick={connect}
+                    >
+                        Connect
+                    </Button>
+                
+                    <div className={styles.LobbyClip}>
                         <video ref={localVideoref} autoPlay muted playsInline></video>
                     </div>
-                </div> :
+            </div> :
 
                 <div className={styles.meetVideoContainer}>
                     {showModal ? <div className={styles.chatRoom}>
@@ -431,6 +462,8 @@ export default function VideoMeet() {
                             </div>
                         </div>
                     </div> : <></>}
+
+                    
 
                     <div className={styles.buttonContainers}>
                         <IconButton onClick={handleVideo} style={{ color: "white" }}>
@@ -455,13 +488,13 @@ export default function VideoMeet() {
                         </Badge>
                     </div>
 
-                    {/* Added playsInline here */}
+                    
                     <video className={styles.meetUserVideo} ref={localVideoref} autoPlay muted playsInline></video>
 
                     <div className={styles.conferenceView}>
                         {videos.map((video) => (
                             <div key={video.socketId}>
-                                {/* FIX 3: Added playsInline so browsers don't block the incoming video stream */}
+                                
                                 <video
                                     data-socket={video.socketId}
                                     ref={ref => {

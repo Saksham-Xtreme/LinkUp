@@ -1,15 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Button, TextField, Typography, Box, Paper, Grid } from "@mui/material";
+import { Button, TextField, Typography, Box, Grid, Card, CardContent } from "@mui/material";
 import VideoCallIcon from "@mui/icons-material/VideoCall";
 import KeyboardIcon from "@mui/icons-material/Keyboard";
+import RestoreIcon from '@mui/icons-material/Restore';
+import { useAuth } from "../contexts/AuthContext"; 
+import "../styles/home.css"; // Ensure this path matches where your CSS file is saved
 
 export default function Home() {
   const navigate = useNavigate();
   const location = useLocation();
   const [roomCode, setRoomCode] = useState("");
+  const { getHistoryOfUser } = useAuth();
+  const [history, setHistory] = useState([]);
 
-  // 1. Catch Google Auth Token (From our earlier setup)
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const data = await getHistoryOfUser();
+        setHistory(data);
+      } catch (error) {
+        console.error("Error fetching history:", error);
+      }
+    };
+    
+    if (localStorage.getItem("token")) {
+      fetchHistory();
+    }
+  }, [getHistoryOfUser]);
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const token = params.get("token");
@@ -20,14 +39,11 @@ export default function Home() {
     }
   }, [location, navigate]);
 
-  // 2. Generate a random meeting room URL and navigate to it
   const handleCreateMeeting = () => {
-    // Generates a random 8-character string (e.g., "x7b9a2kq")
     const newRoomCode = Math.random().toString(36).substring(2, 10);
     navigate(`/room/${newRoomCode}`);
   };
 
-  // 3. Join an existing meeting via user input
   const handleJoinMeeting = () => {
     if (roomCode.trim()) {
       navigate(`/room/${roomCode.trim()}`);
@@ -40,79 +56,107 @@ export default function Home() {
   };
 
   return (
-    <Box sx={{ height: "100vh", backgroundColor: "#f8f9fa", display: "flex", flexDirection: "column" }}>
+    // Replaced inline 'sx' with 'className="homePage"'
+    <Box className="homePage">
       
-      {/* Top Navigation Bar */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: 3, backgroundColor: "#fff", boxShadow: "0 2px 10px rgba(0,0,0,0.05)" }}>
-        <Typography variant="h5" sx={{ fontWeight: 700, color: "#1a73e8" }}>
-          LinkUp
-        </Typography>
-        <Button variant="outlined" color="error" onClick={handleLogout}>
+      {/* Navbar */}
+      <nav className="homeNav">
+        <Box className="navLeft">
+          <img src="/Logo.png" className="navLogo" alt="LinkUp Logo" />
+          <Typography className="navTitle">LinkUp</Typography>
+        </Box>
+        <Button variant="outlined" onClick={handleLogout} className="logoutBtn">
           Logout
         </Button>
-      </Box>
+      </nav>
 
       {/* Main Content Area */}
-      <Grid container sx={{ flex: 1, alignItems: "center", justifyContent: "center", p: 3 }}>
-        <Grid item xs={12} md={6} lg={5}>
-          <Paper elevation={0} sx={{ p: 5, borderRadius: 4, backgroundColor: "transparent" }}>
-            
-            <Typography variant="h3" sx={{ fontWeight: 600, mb: 2, color: "#202124" }}>
+      <Box className="contentWrapper">
+        <Grid container className="homeContainer">
+          
+          {/* Left Side - Meeting Controls */}
+          <Grid item xs={12} md={6} className="heroSection">
+            <Typography className="heroTitle">
               Premium video meetings. <br/> Now free for everyone.
             </Typography>
             
-            <Typography variant="body1" sx={{ color: "#5f6368", mb: 5, fontSize: "1.1rem" }}>
+            <Typography className="heroSubtitle">
               Connect, collaborate, and celebrate from anywhere with LinkUp.
             </Typography>
 
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, alignItems: "center" }}>
-              
-              {/* Start Meeting Button */}
+            <Box className="meetingControls">
               <Button
                 variant="contained"
-                size="large"
                 startIcon={<VideoCallIcon />}
                 onClick={handleCreateMeeting}
-                sx={{ backgroundColor: "#1a73e8", py: 1.5, px: 3, fontSize: "1rem", borderRadius: 2 }}
+                className="newMeetingBtn"
               >
                 New Meeting
               </Button>
 
-              {/* Join Meeting Input */}
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, backgroundColor: "#fff", px: 2, borderRadius: 2, border: "1px solid #dadce0" }}>
-                <KeyboardIcon sx={{ color: "#5f6368" }} />
+              <Box className="joinInput">
+                <KeyboardIcon className="keyboardIcon" />
                 <TextField
                   variant="standard"
                   placeholder="Enter a code or link"
                   value={roomCode}
                   onChange={(e) => setRoomCode(e.target.value)}
                   InputProps={{ disableUnderline: true }}
-                  sx={{ py: 1.5, width: "200px" }}
+                  className="roomInput"
                 />
               </Box>
 
-              {/* Join Button (Only shows if typing) */}
               {roomCode && (
-                <Button 
-                  variant="text" 
-                  size="large" 
-                  onClick={handleJoinMeeting}
-                  sx={{ color: "#1a73e8", fontWeight: 600 }}
-                >
+                <Button onClick={handleJoinMeeting} className="joinBtn">
                   Join
                 </Button>
               )}
-              
             </Box>
-          </Paper>
-        </Grid>
+          </Grid>
 
-        {/* Optional Right-Side Graphic Area */}
-        <Grid item xs={12} md={6} lg={5} sx={{ display: { xs: "none", md: "flex" }, justifyContent: "center" }}>
-           {/* You can add an illustration or image here later */}
-        </Grid>
+          {/* Right Side - Meeting History (Needs CSS classes!) */}
+          <Grid item xs={12} md={6} className="graphicSection">
+            <Box className="historyContainer">
+              
+              <Typography className="historyHeader">
+                <RestoreIcon className="historyIcon" /> Recent Meetings
+              </Typography>
 
-      </Grid>
+              <Box className="historyList">
+                {history && history.length > 0 ? (
+                  history.map((meeting, index) => (
+                    <Card key={index} className="historyCard">
+                      <CardContent className="historyCardContent">
+                        <Box>
+                          <Typography className="historyRoomText">
+                            Room: {meeting.meeting_code}
+                          </Typography>
+                          <Typography className="historyDateText">
+                            {new Date(meeting.date).toLocaleDateString()} at {new Date(meeting.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </Typography>
+                        </Box>
+                        <Button 
+                          variant="outlined" 
+                          onClick={() => navigate(`/room/${meeting.meeting_code}`)}
+                          className="rejoinBtn"
+                        >
+                          Rejoin
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))
+                ) : (
+                  <Typography className="emptyHistoryText">
+                    No recent meetings found. Create one to get started!
+                  </Typography>
+                )}
+              </Box>
+
+            </Box>
+          </Grid>
+
+        </Grid>
+      </Box>
     </Box>
   );
 }

@@ -1,0 +1,339 @@
+/* =========================
+   Global Reset & Background
+========================= */
+:root {
+    --primary-blue: #1a73e8;
+    --primary-hover: #1557b0;
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --text-main: #ffffff;
+    --text-sub: rgba(255, 255, 255, 0.75);
+  }
+  
+  .homePage {
+    min-height: 100vh;
+    width: 100%;
+    /* Added a multi-layer gradient for better text legibility and depth */
+    background: 
+      radial-gradient(circle at top right, rgba(26, 115, 232, 0.15), transparent 400px),
+      linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)), 
+      url("/Background.png");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--text-main);
+  }
+  
+  /* =========================
+      Navbar
+  ========================= */
+  .homeNav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 6%;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  
+  .navLeft {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: transform 0.3s ease;
+  }
+  
+  .navLeft:hover {
+    transform: translateX(5px);
+  }
+  
+  .navLogo {
+    height: 42px;
+    filter: drop-shadow(0 0 8px rgba(26, 115, 232, 0.4));
+  }
+  
+  .navTitle {
+    font-size: 1.7rem !important;
+    font-weight: 800 !important;
+    color: var(--text-main) !important;
+    letter-spacing: -0.8px;
+    background: linear-gradient(to right, #fff, #a5c9ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .logoutBtn {
+    border-radius: 10px !important;
+    border: 1px solid rgba(255, 77, 77, 0.4) !important;
+    color: #ff4d4d !important;
+    background: rgba(255, 77, 77, 0.05) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    text-transform: none !important;
+  }
+  
+  .logoutBtn:hover {
+    background: rgba(255, 77, 77, 0.15) !important;
+    border-color: #ff4d4d !important;
+    transform: translateY(-2px);
+  }
+  
+  /* =========================
+       Main Layout
+  ========================= */
+  .contentWrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 6%;
+  }
+  
+  .homeContainer {
+    width: 100%;
+    max-width: 1300px;
+  }
+  
+  /* =========================
+       Hero Section
+  ========================= */
+  .heroSection {
+    padding-right: 60px;
+  }
+  
+  .heroTitle {
+    font-size: clamp(2.5rem, 6vw, 4.2rem) !important;
+    font-weight: 900 !important;
+    color: var(--text-main) !important;
+    line-height: 1.05 !important;
+    margin-bottom: 1.5rem !important;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+  
+  .heroSubtitle {
+    font-size: 1.35rem !important;
+    color: var(--text-sub) !important;
+    margin-bottom: 3rem !important;
+    max-width: 550px;
+    line-height: 1.6 !important;
+  }
+  
+  /* =========================
+       Meeting Controls
+  ========================= */
+  .meetingControls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+  }
+  
+  .newMeetingBtn {
+    background-color: var(--primary-blue) !important;
+    padding: 16px 36px !important;
+    font-weight: 700 !important;
+    text-transform: none !important;
+    font-size: 1.05rem !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 25px rgba(26, 115, 232, 0.3) !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  .newMeetingBtn:hover {
+    background-color: var(--primary-hover) !important;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(26, 115, 232, 0.5) !important;
+  }
+  
+  .joinInput {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 8px 20px;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .joinInput:focus-within {
+    border-color: var(--primary-blue);
+    background: #ffffff;
+    transform: scale(1.02);
+  }
+  
+  .keyboardIcon {
+    color: #5f6368;
+    font-size: 1.5rem !important;
+  }
+  
+  .roomInput {
+    width: 240px;
+  }
+  
+  .joinBtn {
+    color: var(--text-main) !important;
+    font-weight: 700 !important;
+    text-transform: none !important;
+    font-size: 1.15rem !important;
+    opacity: 0.9;
+    transition: opacity 0.2s !important;
+  }
+  
+  .joinBtn:hover {
+    opacity: 1;
+    text-decoration: underline !important;
+  }
+  
+  /* =========================
+       Graphic Section
+  ========================= */
+  .graphicSection {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+  
+  .heroLogo {
+    width: 90%;
+    max-width: 450px;
+    filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.6)) brightness(1.1);
+    animation: float 8s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-30px) rotate(2deg); }
+  }
+  
+  /* =========================
+       Responsive
+  ========================= */
+  @media (max-width: 900px) {
+    .heroSection {
+      padding-right: 0;
+      text-align: center;
+      align-items: center;
+    }
+  
+    .heroSubtitle {
+      margin-left: auto;
+      margin-right: auto;
+    }
+  
+    .meetingControls {
+      justify-content: center;
+    }
+  
+    .graphicSection {
+      margin-top: 4rem;
+    }
+}
+
+/* =========================
+   Meeting History Section
+========================= */
+.historyContainer {
+    width: 100%;
+    max-width: 500px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  }
+  
+  .historyHeader {
+    font-size: 1.4rem !important;
+    font-weight: 700 !important;
+    color: var(--text-main) !important;
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px !important;
+  }
+  
+  .historyIcon {
+    color: var(--primary-blue);
+  }
+  
+  .historyList {
+    max-height: 40vh;
+    overflow-y: auto;
+    padding-right: 10px;
+  }
+  
+  /* Scrollbar Styling for History */
+  .historyList::-webkit-scrollbar {
+    width: 6px;
+  }
+  .historyList::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+  }
+  
+  .historyCard {
+    background: rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px !important;
+    margin-bottom: 15px !important;
+    transition: all 0.2s ease !important;
+  }
+  
+  .historyCard:hover {
+    background: rgba(0, 0, 0, 0.6) !important;
+    border-color: var(--primary-blue) !important;
+    transform: translateX(5px);
+  }
+  
+  .historyCardContent {
+    padding: 16px 20px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+  
+  .historyRoomText {
+    font-weight: 700 !important;
+    color: var(--text-main) !important;
+    font-size: 1.05rem !important;
+  }
+  
+  .historyDateText {
+    color: var(--text-sub) !important;
+    font-size: 0.85rem !important;
+    margin-top: 4px !important;
+  }
+  
+  .rejoinBtn {
+    border-radius: 8px !important;
+    text-transform: none !important;
+    font-weight: 600 !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    color: var(--text-main) !important;
+  }
+  
+  .rejoinBtn:hover {
+    background: var(--primary-blue) !important;
+    border-color: var(--primary-blue) !important;
+  }
+  
+  .emptyHistoryText {
+    color: var(--text-sub) !important;
+    font-style: italic !important;
+    text-align: center !important;
+    padding: 20px !important;
+    background: rgba(0, 0, 0, 0.2) !important;
+    border-radius: 12px !important;
+    border: 1px dashed rgba(255, 255, 255, 0.2) !important;
+  }
