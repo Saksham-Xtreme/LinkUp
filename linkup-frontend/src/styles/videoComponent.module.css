@@ -1,8 +1,6 @@
 /* ==============================================
-   Main Meeting Layout
+   Lobby Layout (Clean & Modern)
 ================================================= */
-
-/* Container that centers the Lobby on the dark background */
 .OpenLobby {
     display: flex;
     flex-direction: column;
@@ -10,16 +8,15 @@
     justify-content: center;
     width: 100%;
     max-width: 550px;
-    margin: auto; /* Centers the card horizontally and vertically */
+    margin: auto;
     padding: 40px;
     background: rgba(255, 255, 255, 0.95) !important;
-    backdrop-filter: blur(15px);
+    backdrop-filter: blur(20px);
     border-radius: 28px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
     animation: authFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Big, bold title for the Lobby */
 .Lobbytitle {
     font-size: 2.2rem !important;
     font-weight: 800 !important;
@@ -28,10 +25,6 @@
     letter-spacing: -1px;
 }
 
-
-
-
-/* Styling for the Username Input and Connect Button Row */
 .LobbyUsername {
     margin-bottom: 20px !important;
     background: #ffffff;
@@ -41,7 +34,8 @@
 .LobbyConnect {
     width: 100%;
     height: 56px !important;
-    background-color: #3b82f6 !important;
+    background-color: #1a73e8 !important;
+    color: white !important;
     font-weight: 700 !important;
     text-transform: none !important;
     font-size: 1.1rem !important;
@@ -51,43 +45,39 @@
 }
 
 .LobbyConnect:hover {
-    background-color: #2563eb !important;
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3) !important;
+    background-color: #1557b0 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(26, 115, 232, 0.4) !important;
 }
 
-/* The Video Preview Box */
 .LobbyClip {
     width: 100%;
     aspect-ratio: 16 / 9;
     background: #000;
     border-radius: 20px;
     overflow: hidden;
-    border: 3px solid #e2e8f0;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    border: 4px solid #f8f9fa;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
 .LobbyClip video {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* Mirror the video so the user feels natural */
     transform: scaleX(-1);
 }
 
-/* Smooth Entrance Animation */
-@keyframes authFadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+/* ==============================================
+   Main Connection Layout
+================================================= */
 .meetVideoContainer {
     width: 100vw;
     height: 100vh;
-    background-color: #121212; /* Deep dark theme */
+    background-color: #0b0f19; /* Deep, rich LinkUp dark mode */
     position: relative;
     overflow: hidden;
     display: flex;
-    flex-direction: row; /* Allows the chat to sit on the right side */
+    flex-direction: row; 
 }
 
 /* ==============================================
@@ -95,25 +85,28 @@
 ================================================= */
 .conferenceView {
     flex: 1;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
     padding: 20px;
-    gap: 15px;
-    height: 100%;
+    padding-bottom: 100px; /* Room for bottom controls */
+    align-content: center;
     overflow-y: auto;
 }
 
-/* Individual remote video wrapper */
 .conferenceView div {
-    flex: 1 1 400px; /* Grow to fill, base size 400px */
-    max-width: 800px;
+    width: 100%;
     aspect-ratio: 16 / 9;
-    background-color: #202124;
-    border-radius: 12px;
+    border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    background: #1e293b;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.conferenceView div:hover {
+    transform: scale(1.01);
 }
 
 .conferenceView video {
@@ -127,79 +120,120 @@
 ================================================= */
 .meetUserVideo {
     position: absolute;
-    bottom: 90px; /* Hovers right above the controls */
-    right: 20px;
-    width: 240px;
+    bottom: 100px;
+    right: 30px;
+    width: 260px;
     aspect-ratio: 16 / 9;
     background-color: #000;
-    border-radius: 12px;
+    border-radius: 16px;
     object-fit: cover;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
-    border: 2px solid #3b82f6; /* Blue accent border to identify yourself */
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    border: 3px solid #1a73e8; /* LinkUp Blue Accent */
     z-index: 10;
-    transition: transform 0.2s ease-in-out;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transform: scaleX(-1); /* Mirror local video naturally */
 }
 
 .meetUserVideo:hover {
-    transform: scale(1.05); /* Slight pop out on hover */
+    transform: scaleX(-1) translateY(-5px); 
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
 }
 
 /* ==============================================
-   Bottom Control Bar
+   Bottom Control Bar & Buttons (THE UPGRADE)
 ================================================= */
+/* Update this block in your CSS */
 .buttonContainers {
     position: absolute;
-    bottom: 20px;
+    bottom: 25px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: rgba(32, 33, 36, 0.85); /* Semi-transparent dark */
-    backdrop-filter: blur(10px);
-    padding: 10px 24px;
-    border-radius: 50px;
+    background: rgba(15, 23, 42, 0.85); 
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 12px 24px;
+    border-radius: 60px;
     display: flex;
     gap: 16px;
-    z-index: 20;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    z-index: 50; /* <--- CHANGED FROM 20 TO 50: This forces controls to the very front */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Make icons transition smoothly on hover */
-.buttonContainers button {
-    transition: all 0.2s ease;
-}
-.buttonContainers button:hover {
+/* Standard Control Buttons (Mic, Cam, Screen) */
+.controlBtn {
     background-color: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+    width: 50px;
+    height: 50px;
+    transition: all 0.2s ease !important;
+}
+
+.controlBtn:hover {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    transform: translateY(-2px);
+}
+
+/* Inactive State (When Mic or Cam is OFF) */
+.controlBtnOff {
+    background-color: rgba(239, 68, 68, 0.2) !important; /* Soft red tint */
+    color: #ef4444 !important; /* Bright red icon */
+    width: 50px;
+    height: 50px;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    transition: all 0.2s ease !important;
+}
+
+.controlBtnOff:hover {
+    background-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+/* Destructive Hangup Button */
+.endCallBtn {
+    background-color: #ef4444 !important;
+    color: white !important;
+    width: 60px; /* Slightly wider so it stands out */
+    height: 50px;
+    border-radius: 25px !important;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4) !important;
+    transition: all 0.2s ease !important;
+}
+
+.endCallBtn:hover {
+    background-color: #dc2626 !important;
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6) !important;
 }
 
 /* ==============================================
    Side Chat Room Modal
 ================================================= */
 .chatRoom {
-    width: 360px;
+    width: 380px;
     height: 100%;
-    background-color: #1e1e1e;
-    border-left: 1px solid #333;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(20px);
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
     display: flex;
     flex-direction: column;
-    z-index: 15;
-    animation: slideIn 0.3s ease-out forwards;
+    z-index: 25; 
+    animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .chatContainer {
     display: flex;
     flex-direction: column;
     height: 100%;
-    padding: 20px;
-    color: #e8eaed;
+    padding: 24px;
 }
 
 .chatContainer h1 {
-    margin-top: 0;
-    font-size: 1.25rem;
-    font-weight: 600;
-    border-bottom: 1px solid #3c4043;
+    margin: 0 0 20px 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     padding-bottom: 15px;
-    margin-bottom: 15px;
 }
 
 /* Chat Message History */
@@ -208,44 +242,39 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    padding-right: 8px; /* Room for scrollbar */
+    gap: 16px;
+    padding-right: 8px;
     margin-bottom: 20px;
 }
 
-/* Individual Message Cards */
+/* Messaging App Bubble Style */
 .chattingDisplay > div {
-    background-color: #2c2c2c;
-    padding: 10px 14px;
-    border-radius: 12px;
-    border-top-left-radius: 0; /* Chat bubble look */
+    background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+    padding: 14px 16px;
+    border-radius: 16px;
+    border-top-left-radius: 4px; /* classic chat bubble hook */
+    border: 1px solid rgba(255, 255, 255, 0.05);
     word-break: break-word;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .chattingDisplay p {
     margin: 0;
 }
+
 .chattingDisplay p:first-child {
-    font-size: 0.85rem;
-    color: #9aa0a6;
-    margin-bottom: 4px;
-}
-.chattingDisplay p:last-child {
-    font-size: 0.95rem;
-    color: #fff;
-    line-height: 1.4;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #94a3b8; /* Soft blue-grey */
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-/* Custom Scrollbar for Chat */
-.chattingDisplay::-webkit-scrollbar {
-    width: 6px;
-}
-.chattingDisplay::-webkit-scrollbar-thumb {
-    background: #555;
-    border-radius: 10px;
-}
-.chattingDisplay::-webkit-scrollbar-track {
-    background: transparent;
+.chattingDisplay p:last-child {
+    font-size: 1rem;
+    color: #f8fafc;
+    line-height: 1.5;
 }
 
 /* Input & Send Button Area */
@@ -253,59 +282,78 @@
     display: flex;
     gap: 10px;
     align-items: center;
-    background-color: #f1f3f4;
-    padding: 8px;
-    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2); 
+    padding: 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Target the MUI TextField to look good inside our custom box */
 .chattingArea > div {
     flex: 1;
 }
 
+.chattingArea input {
+    color: white !important;
+}
 
-.participantCount {
-    position: absolute;
-    top: 25px;
-    right: 25px;
-    background: rgba(15, 23, 42, 0.75); /* Deep translucent blue */
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    padding: 8px 16px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #ffffff;
-    z-index: 100;
-    pointer-events: none; /* Prevents interference with video clicks */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-    letter-spacing: 1px;
-    display: flex;
-    align-items: center;
-    animation: fadeIn 0.4s ease-out;
+.chattingArea label {
+    color: rgba(255, 255, 255, 0.5) !important;
 }
 
 /* ==============================================
-   Animations
+   Mobile Responsiveness (Fixing the layout completely)
 ================================================= */
+@media (max-width: 768px) {
+    .meetVideoContainer {
+        flex-direction: column;
+    }
+
+    /* Keep chat full screen but above controls */
+    .chatRoom {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100%; 
+        height: 100%;
+        max-width: none;
+    }
+
+    .chatContainer {
+        padding-bottom: 110px; /* Crucial: Prevents input from hiding behind buttons */
+    }
+
+    /* FIX: Move local video to top right so it doesn't block chat/controls */
+    .meetUserVideo {
+        width: 110px;
+        bottom: auto; /* Remove bottom positioning */
+        top: 20px;    /* Anchor to top */
+        right: 15px;
+        z-index: 30;
+        border-radius: 10px;
+        border-width: 2px;
+    }
+
+    .buttonContainers {
+        width: 95%;
+        bottom: 15px;
+        padding: 10px;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap; /* Allows wrapping on very tiny screens */
+    }
+    
+    .controlBtn, .controlBtnOff {
+        width: 44px;
+        height: 44px;
+    }
+}
+
+/* Animations */
 @keyframes slideIn {
     from { transform: translateX(100%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
 }
-
-/* ==============================================
-   Mobile Responsiveness
-================================================= */
-@media (max-width: 768px) {
-    .meetUserVideo {
-        width: 140px;
-        bottom: 80px;
-        right: 10px;
-    }
-
-    .chatRoom {
-        position: absolute;
-        right: 0;
-        width: 100%;
-        max-width: 360px;
-    }
+@keyframes authFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }

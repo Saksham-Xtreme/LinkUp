@@ -1,17 +1,25 @@
 import React, { useEffect, useRef, useState } from 'react';
 import io from "socket.io-client";
-import { Badge, IconButton, TextField, Button } from '@mui/material';
+import { 
+    Badge, 
+    IconButton, 
+    TextField, 
+    Button, 
+    Snackbar 
+} from '@mui/material'; 
 import VideocamIcon from '@mui/icons-material/Videocam';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import CallEndIcon from '@mui/icons-material/CallEnd';
 import MicIcon from '@mui/icons-material/Mic';
+import CloseIcon from '@mui/icons-material/Close';
 import MicOffIcon from '@mui/icons-material/MicOff';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
 import ChatIcon from '@mui/icons-material/Chat';
-import { useNavigate, useParams } from 'react-router-dom'; // IMPORT useParams
+import { useNavigate, useParams } from 'react-router-dom';
 import styles from "../styles/videoComponent.module.css";
-import { useAuth } from "../contexts/AuthContext"; // IMPORT useAuth hook
+import { useAuth } from "../contexts/AuthContext";
 
 const server_url = "http://localhost:8000";
 
@@ -33,7 +41,7 @@ export default function VideoMeet() {
     var socketRef = useRef();
     let socketIdRef = useRef();
     let localVideoref = useRef();
-
+    const [copySuccess, setCopySuccess] = useState(false);
     let [videoAvailable, setVideoAvailable] = useState(true);
     let [audioAvailable, setAudioAvailable] = useState(true);
     let [video, setVideo] = useState(true); // Changed from array [] to true
@@ -74,6 +82,12 @@ export default function VideoMeet() {
             }
         }
     }
+
+    const copyClick = () => {
+        // navigator.clipboard.writeText works on all modern browsers
+        navigator.clipboard.writeText(window.location.href);
+        setCopySuccess(true);
+    };
 
     const getPermissions = async () => {
         try {
@@ -456,6 +470,13 @@ export default function VideoMeet() {
                                 }) : <p>No Messages Yet</p>}
                             </div>
 
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '15px', marginBottom: '20px' }}>
+                                <h1 style={{ margin: 0, padding: 0, border: 'none' }}>Chat</h1>
+                                <IconButton onClick={() => setModal(false)} style={{ color: "white", padding: 0 }}>
+                                    <CloseIcon />
+                                </IconButton>
+                            </div>
+
                             <div className={styles.chattingArea}>
                                 <TextField value={message} onChange={(e) => setMessage(e.target.value)} id="outlined-basic" label="Enter Your chat" variant="outlined" />
                                 <Button variant='contained' onClick={sendMessage}>Send</Button>
@@ -466,23 +487,48 @@ export default function VideoMeet() {
                     
 
                     <div className={styles.buttonContainers}>
-                        <IconButton onClick={handleVideo} style={{ color: "white" }}>
-                            {(video === true) ? <VideocamIcon /> : <VideocamOffIcon />}
-                        </IconButton>
-                        <IconButton onClick={handleEndCall} style={{ color: "red" }}>
-                            <CallEndIcon  />
-                        </IconButton>
-                        <IconButton onClick={handleAudio} style={{ color: "white" }}>
-                            {audio === true ? <MicIcon /> : <MicOffIcon />}
+                        {/* Video Button */}
+                        <IconButton 
+                            onClick={handleVideo} 
+                            className={video ? styles.controlBtn : styles.controlBtnOff}
+                        >
+                            {video ? <VideocamIcon /> : <VideocamOffIcon />}
                         </IconButton>
 
-                        {screenAvailable === true ?
-                            <IconButton onClick={handleScreen} style={{ color: "white" }}>
-                                {screen === true ? <ScreenShareIcon /> : <StopScreenShareIcon />}
-                            </IconButton> : <></>}
+                        {/* Hangup Button */}
+                        <IconButton onClick={handleEndCall} className={styles.endCallBtn}>
+                            <CallEndIcon />
+                        </IconButton>
 
-                        <Badge badgeContent={newMessages} max={999} color='orange'>
-                            <IconButton onClick={() => setModal(!showModal)} style={{ color: "white" }}>
+                        {/* Audio Button */}
+                        <IconButton 
+                            onClick={handleAudio} 
+                            className={audio ? styles.controlBtn : styles.controlBtnOff}
+                        >
+                            {audio ? <MicIcon /> : <MicOffIcon />}
+                        </IconButton>
+
+                        {/* Copy Link Button */}
+                        <IconButton onClick={copyClick} className={styles.controlBtn}>
+                            <ContentCopyIcon />
+                        </IconButton>
+
+                        {/* Screen Share Button */}
+                        {screenAvailable && (
+                            <IconButton 
+                                onClick={handleScreen} 
+                                className={screen ? styles.controlBtnOff : styles.controlBtn}
+                            >
+                                {screen ? <StopScreenShareIcon /> : <ScreenShareIcon />}
+                            </IconButton>
+                        )}
+
+                        {/* Chat Button with Badge */}
+                        <Badge badgeContent={newMessages} max={99} color='error'>
+                            <IconButton 
+                                onClick={() => setModal(!showModal)} 
+                                className={showModal ? styles.controlBtnOff : styles.controlBtn}
+                            >
                                 <ChatIcon />                        
                             </IconButton>
                         </Badge>
@@ -511,6 +557,13 @@ export default function VideoMeet() {
                     </div>
                 </div>
             }
+
+            <Snackbar
+                open={copySuccess}
+                autoHideDuration={2000}
+                onClose={() => setCopySuccess(false)}
+                message="Invite link copied to clipboard!"
+            />
         </div>
     )
 }

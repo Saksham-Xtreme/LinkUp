@@ -77,11 +77,11 @@ export default function Home() {
           {/* Left Side - Meeting Controls */}
           <Grid item xs={12} md={6} className="heroSection">
             <Typography className="heroTitle">
-              Premium video meetings. <br/> Now free for everyone.
+                Deeply connected. <br/> No matter the distance.
             </Typography>
             
             <Typography className="heroSubtitle">
-              Connect, collaborate, and celebrate from anywhere with LinkUp.
+                Share a smile, a laugh, and a moment with the ones who matter most. LinkUp is where hearts meet.
             </Typography>
 
             <Box className="meetingControls">
@@ -91,14 +91,14 @@ export default function Home() {
                 onClick={handleCreateMeeting}
                 className="newMeetingBtn"
               >
-                New Meeting
+                Start a Moment
               </Button>
 
               <Box className="joinInput">
                 <KeyboardIcon className="keyboardIcon" />
                 <TextField
                   variant="standard"
-                  placeholder="Enter a code or link"
+                  placeholder="Enter a connection code."
                   value={roomCode}
                   onChange={(e) => setRoomCode(e.target.value)}
                   InputProps={{ disableUnderline: true }}
@@ -119,7 +119,7 @@ export default function Home() {
             <Box className="historyContainer">
               
               <Typography className="historyHeader">
-                <RestoreIcon className="historyIcon" /> Recent Meetings
+                <RestoreIcon className="historyIcon" /> Your Recent Connections
               </Typography>
 
               <Box className="historyList">
