@@ -21,7 +21,21 @@ import userRoutes from "./routes/users.routes.js";
 
 app.set("port", (process.env.PORT || 8000));
 
-app.use(cors());
+const allowedOrigins = [
+    "http://localhost:5173",
+    process.env.CLIENT_URL
+];
+  
+app.use(cors({
+    origin: function(origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        } else {
+        callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true
+}));
 app.use(passport.initialize());
 
 app.use(express.json({limit : "40kb"}));
@@ -44,7 +58,8 @@ const connectionDb = async () => {
 const start = async () => {
     await connectionDb();
     server.listen(app.get("port"), () => {
-        console.log("Listening on port 8000");
+        console.log(`Server running on port ${app.get("port")}`);
+        console.log(process.env.CLIENT_URL);
 
     });
 }

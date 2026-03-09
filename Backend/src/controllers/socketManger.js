@@ -8,10 +8,10 @@ export const connectToSocket = (server) => {
 
   const io = new Server(server, {
     cors: {
-      origin: process.env.CLIENT_URL,
-      methods: ["GET", "POST"],
-      allowedHeaders: ["*"],
-      credentials: true
+        origin: process.env.CLIENT_URL,
+        methods: ["GET", "POST"],
+        allowedHeaders: ["*"],
+        credentials: true
     }
   });
 
