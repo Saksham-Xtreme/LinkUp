@@ -6,9 +6,10 @@ import axios from "axios";
 const AuthContext = createContext({});
 
 const client = axios.create({
-    baseURL: "http://localhost:8000/api/v1/users"
+    baseURL: `${import.meta.env.VITE_API_URL}/users`
 });
 
+console.log(import.meta.env.VITE_API_URL);
 export const AuthProvider = ({ children }) => {
     
     const router = useNavigate();

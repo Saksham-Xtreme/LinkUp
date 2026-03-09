@@ -114,7 +114,7 @@ export default function Authentication() {
                                 fullWidth 
                                 variant="outlined"
                                 startIcon={<GoogleIcon />} 
-                                onClick={() => window.location.href = "http://localhost:8000/auth/google"}
+                                onClick={() => window.location.href = "https://linkup-c1fx.onrender.com/auth/google"}
                             >
                                 Continue with Google
                             </Button>
