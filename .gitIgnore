@@ -1,2 +1,4 @@
 # Ignore environment variables file
-.env
+.env 
+linkup-frontend/node_modules
+Backend/node_modules

@@ -11,17 +11,18 @@ import VideocamIcon from '@mui/icons-material/Videocam';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import CallEndIcon from '@mui/icons-material/CallEnd';
 import MicIcon from '@mui/icons-material/Mic';
-import CloseIcon from '@mui/icons-material/Close';
 import MicOffIcon from '@mui/icons-material/MicOff';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
 import ChatIcon from '@mui/icons-material/Chat';
+import CloseIcon from '@mui/icons-material/Close'; // Imported Close Icon
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from "../styles/videoComponent.module.css";
 import { useAuth } from "../contexts/AuthContext";
 
-const server_url = "http://localhost:8000";
+// Use environment variable, fallback to localhost for development if missing
+const server_url = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
 var connections = {};
 
@@ -33,9 +34,7 @@ const peerConfigConnections = {
 
 export default function VideoMeet() {
     const navigate = useNavigate(); 
-    // 1. Grab the current room code from the URL (e.g., /room/x7b9a2kq)
     const { url } = useParams(); 
-    // 2. Pull our history function from context
     const { addToUserHistory } = useAuth();
 
     var socketRef = useRef();
@@ -44,14 +43,14 @@ export default function VideoMeet() {
     const [copySuccess, setCopySuccess] = useState(false);
     let [videoAvailable, setVideoAvailable] = useState(true);
     let [audioAvailable, setAudioAvailable] = useState(true);
-    let [video, setVideo] = useState(true); // Changed from array [] to true
+    let [video, setVideo] = useState(true); 
     let [audio, setAudio] = useState();
     let [screen, setScreen] = useState();
     let [showModal, setModal] = useState(true);
     let [screenAvailable, setScreenAvailable] = useState();
     let [messages, setMessages] = useState([]);
     let [message, setMessage] = useState("");
-    let [newMessages, setNewMessages] = useState(3);
+    let [newMessages, setNewMessages] = useState(0); // Start at 0
     let [askForUsername, setAskForUsername] = useState(true);
     let [username, setUsername] = useState("");
     const videoRef = useRef([]);
@@ -70,8 +69,6 @@ export default function VideoMeet() {
         getPermissions();
     }, []);
 
-    // ... (Your getPermissions, getMedia, getUserMedia functions remain unchanged) ...
-
     let getDislayMedia = () => {
         if (screen) {
             if (navigator.mediaDevices.getDisplayMedia) {
@@ -84,7 +81,6 @@ export default function VideoMeet() {
     }
 
     const copyClick = () => {
-        // navigator.clipboard.writeText works on all modern browsers
         navigator.clipboard.writeText(window.location.href);
         setCopySuccess(true);
     };
@@ -387,35 +383,43 @@ export default function VideoMeet() {
         navigate("/home"); 
     }
 
-    let openChat = () => {
-        setModal(true);
-        setNewMessages(0);
-    }
-
     let closeChat = () => setModal(false);
-    let handleMessage = (e) => setMessage(e.target.value);
 
     const addMessage = (data, sender, socketIdSender) => {
+        // Prevent duplicate messages: If the server echoes our own message back to us, ignore it.
+        if (socketIdSender === socketIdRef.current) {
+            return; 
+        }
+
         setMessages((prevMessages) => [
             ...prevMessages,
             { sender: sender, data: data }
         ]);
-        if (socketIdSender !== socketIdRef.current) {
-            setNewMessages((prevNewMessages) => prevNewMessages + 1);
-        }
+        
+        // Since we ignored our own messages above, any message that makes it here is from someone else.
+        setNewMessages((prevNewMessages) => prevNewMessages + 1);
     };
 
     let sendMessage = () => {
-        socketRef.current.emit('chat-message', message, username)
+        if (message.trim() === "") return; // Don't send empty messages
+
+        // Broadcast to others
+        socketRef.current.emit('chat-message', message, username);
+        
+        // Add instantly to local state
+        setMessages((prevMessages) => [
+            ...prevMessages,
+            { sender: username, data: message }
+        ]);
+
+        // Clear input
         setMessage("");
     }
 
-    // 3. UPDATED CONNECT FUNCTION
     let connect = async () => {
         setAskForUsername(false);
         getMedia();
         
-        // Log this meeting to the database using the URL parameter
         if (url) {
             try {
                 await addToUserHistory(url);
@@ -453,41 +457,61 @@ export default function VideoMeet() {
                     <div className={styles.LobbyClip}>
                         <video ref={localVideoref} autoPlay muted playsInline></video>
                     </div>
-            </div> :
-
+                </div> 
+            :
                 <div className={styles.meetVideoContainer}>
-                    {showModal ? <div className={styles.chatRoom}>
-                        <div className={styles.chatContainer}>
-                            <h1>Chat</h1>
-                            <div className={styles.chattingDisplay}>
-                                {messages.length !== 0 ? messages.map((item, index) => {
-                                    return (
-                                        <div style={{ marginBottom: "20px" }} key={index}>
-                                            <p style={{ fontWeight: "bold" }}>{item.sender}</p>
-                                            <p>{item.data}</p>
-                                        </div>
-                                    )
-                                }) : <p>No Messages Yet</p>}
-                            </div>
+                    
+                    {/* Corrected Chat Modal */}
+                    {showModal ? (
+                        <div className={styles.chatRoom}>
+                            <div className={styles.chatContainer}>
+                                
+                                {/* 1. Header with Close Button */}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '15px', marginBottom: '20px' }}>
+                                    <h1 style={{ margin: 0, padding: 0, border: 'none', color: '#fff', fontSize: '1.4rem' }}>Chat</h1>
+                                    <IconButton onClick={closeChat} style={{ color: "white", padding: 0 }}>
+                                        <CloseIcon />
+                                    </IconButton>
+                                </div>
 
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '15px', marginBottom: '20px' }}>
-                                <h1 style={{ margin: 0, padding: 0, border: 'none' }}>Chat</h1>
-                                <IconButton onClick={() => setModal(false)} style={{ color: "white", padding: 0 }}>
-                                    <CloseIcon />
-                                </IconButton>
-                            </div>
+                                {/* 2. Message Display */}
+                                <div className={styles.chattingDisplay}>
+                                    {messages.length !== 0 ? messages.map((item, index) => {
+                                        return (
+                                            <div key={index}>
+                                                <p style={{ fontWeight: "bold" }}>{item.sender}</p>
+                                                <p>{item.data}</p>
+                                            </div>
+                                        )
+                                    }) : <p style={{ color: 'rgba(255,255,255,0.5)', textAlign: 'center' }}>No Messages Yet</p>}
+                                </div>
 
-                            <div className={styles.chattingArea}>
-                                <TextField value={message} onChange={(e) => setMessage(e.target.value)} id="outlined-basic" label="Enter Your chat" variant="outlined" />
-                                <Button variant='contained' onClick={sendMessage}>Send</Button>
+                                {/* 3. Input Area */}
+                                <div className={styles.chattingArea}>
+                                    <TextField 
+                                        value={message} 
+                                        onChange={(e) => setMessage(e.target.value)} 
+                                        id="outlined-basic" 
+                                        label="Share a thought..." 
+                                        variant="outlined" 
+                                        size="small"
+                                        fullWidth
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                sendMessage();
+                                            }
+                                        }}
+                                    />
+                                    <Button variant='contained' onClick={sendMessage}>Send</Button>
+                                </div>
+
                             </div>
                         </div>
-                    </div> : <></>}
+                    ) : null}
 
-                    
-
+                    {/* Control Buttons */}
                     <div className={styles.buttonContainers}>
-                        {/* Video Button */}
                         <IconButton 
                             onClick={handleVideo} 
                             className={video ? styles.controlBtn : styles.controlBtnOff}
@@ -495,12 +519,10 @@ export default function VideoMeet() {
                             {video ? <VideocamIcon /> : <VideocamOffIcon />}
                         </IconButton>
 
-                        {/* Hangup Button */}
                         <IconButton onClick={handleEndCall} className={styles.endCallBtn}>
                             <CallEndIcon />
                         </IconButton>
 
-                        {/* Audio Button */}
                         <IconButton 
                             onClick={handleAudio} 
                             className={audio ? styles.controlBtn : styles.controlBtnOff}
@@ -508,12 +530,10 @@ export default function VideoMeet() {
                             {audio ? <MicIcon /> : <MicOffIcon />}
                         </IconButton>
 
-                        {/* Copy Link Button */}
                         <IconButton onClick={copyClick} className={styles.controlBtn}>
                             <ContentCopyIcon />
                         </IconButton>
 
-                        {/* Screen Share Button */}
                         {screenAvailable && (
                             <IconButton 
                                 onClick={handleScreen} 
@@ -523,10 +543,12 @@ export default function VideoMeet() {
                             </IconButton>
                         )}
 
-                        {/* Chat Button with Badge */}
                         <Badge badgeContent={newMessages} max={99} color='error'>
                             <IconButton 
-                                onClick={() => setModal(!showModal)} 
+                                onClick={() => {
+                                    setModal(!showModal);
+                                    if(!showModal) setNewMessages(0); // Reset badge when opening chat
+                                }} 
                                 className={showModal ? styles.controlBtnOff : styles.controlBtn}
                             >
                                 <ChatIcon />                        
@@ -534,13 +556,11 @@ export default function VideoMeet() {
                         </Badge>
                     </div>
 
-                    
                     <video className={styles.meetUserVideo} ref={localVideoref} autoPlay muted playsInline></video>
 
                     <div className={styles.conferenceView}>
                         {videos.map((video) => (
                             <div key={video.socketId}>
-                                
                                 <video
                                     data-socket={video.socketId}
                                     ref={ref => {

@@ -15,19 +15,34 @@ export default function Home() {
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
+    // 1. Check for token in URL and save it first
+    const params = new URLSearchParams(location.search);
+    const urlToken = params.get("token");
+
+    if (urlToken) {
+      localStorage.setItem("token", urlToken);
+      navigate("/home", { replace: true });
+    }
+
+    // 2. Now fetch the history
     const fetchHistory = async () => {
+      if (!localStorage.getItem("token")) return;
+
       try {
         const data = await getHistoryOfUser();
-        setHistory(data);
+        // Extract the array safely so .map() doesn't crash
+        if (Array.isArray(data)) setHistory(data);
+        else if (data && Array.isArray(data.history)) setHistory(data.history);
+        else if (data && Array.isArray(data.meetingHistory)) setHistory(data.meetingHistory);
+        else setHistory([]);
       } catch (error) {
         console.error("Error fetching history:", error);
+        setHistory([]);
       }
     };
-    
-    if (localStorage.getItem("token")) {
-      fetchHistory();
-    }
-  }, [getHistoryOfUser]);
+
+    fetchHistory();
+  }, [location.search, navigate, getHistoryOfUser]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -123,7 +138,7 @@ export default function Home() {
               </Typography>
 
               <Box className="historyList">
-                {history && history.length > 0 ? (
+                {Array.isArray(history) && history.length > 0 ? (
                   history.map((meeting, index) => (
                     <Card key={index} className="historyCard">
                       <CardContent className="historyCardContent">
