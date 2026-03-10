@@ -35,9 +35,7 @@ export default function LandingPage() {
                         </>
                     ) : (
                         <>
-                            <button className="Join" onClick={() => navigate("/guest")}>
-                                Join as Guest
-                            </button>
+                           
                             <button className="RegisterButton" onClick={() => navigate("/auth")}>
                                 Register
                             </button>
