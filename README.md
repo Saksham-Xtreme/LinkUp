@@ -10,7 +10,7 @@
 
 * **Google OAuth 2.0:** Secure, one-tap login.
 * **Smart Onboarding:** Personalized username setup for new souls.
-* **Automated Welcome:** Instant email confirmation via Nodemailer.
+
 
 ### 💬 Heart-to-Heart Messaging
 
@@ -40,7 +40,7 @@ graph TD
     A[React Frontend] <-->|Signaling/Chat| B[Socket.io Server]
     B <--> C[MongoDB]
     A <-->|WebRTC P2P Stream| D[Remote Peer]
-    B --> E[Nodemailer/Google OAuth]
+    
 
 ```
 
@@ -54,7 +54,7 @@ graph TD
 | **Backend** | Node.js, Express.js, Socket.io |
 | **Database** | MongoDB (Mongoose ODM) |
 | **Auth** | Google OAuth 2.0 (Passport.js) |
-| **Storage/Mail** | Cloudinary, Nodemailer |
+
 
 ---
 
@@ -116,8 +116,7 @@ MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_random_secret_key
 GOOGLE_CLIENT_ID=your_google_id
 GOOGLE_CLIENT_SECRET=your_google_secret
-EMAIL_USER=your_gmail@gmail.com
-EMAIL_PASS=your_app_specific_password
+
 
 ```
 
