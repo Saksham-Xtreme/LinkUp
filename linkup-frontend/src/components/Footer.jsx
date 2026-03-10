@@ -23,7 +23,7 @@ export default function Footer() {
                 {/* LinkedIn Link */}
                 <IconButton 
                     component="a" 
-                    href="www.linkedin.com/in/saksham-tripathi-7b25b0330" // <-- PASTE YOUR LINKEDIN HERE
+                    href="https://www.linkedin.com/in/saksham-tripathi-7b25b0330/" // <-- PASTE YOUR LINKEDIN HERE
                     target="_blank" 
                     rel="noopener noreferrer"
                     sx={{ color: '#0A66C2', '&:hover': { color: '#ffffff' } }}
