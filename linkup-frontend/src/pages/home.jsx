@@ -5,6 +5,7 @@ import VideoCallIcon from "@mui/icons-material/VideoCall";
 import KeyboardIcon from "@mui/icons-material/Keyboard";
 import RestoreIcon from '@mui/icons-material/Restore';
 import { useAuth } from "../contexts/AuthContext"; 
+import Footer from './components/Footer';
 import "../styles/home.css"; // Ensure this path matches where your CSS file is saved
 
 export default function Home() {
@@ -172,6 +173,7 @@ export default function Home() {
 
         </Grid>
       </Box>
+      <Footer />
     </Box>
   );
 }

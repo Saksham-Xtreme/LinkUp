@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom'; 
 import "../App.css";
-
+import Footer from '../components/Footer';
 export default function LandingPage() {
     const navigate = useNavigate();
     
@@ -19,7 +19,7 @@ export default function LandingPage() {
             <nav>
                 <div className='navHeader'>
                     <img src="/Logo.png" alt="LinkUp Logo" className="navLogo" />
-                    <h3 className="Title">LinkUp</h3>
+                    <h3 className="Title">LinkUp </h3> 
                 </div>
                 
                 <div className='navList'>
@@ -68,7 +68,11 @@ export default function LandingPage() {
                     </Link>
                 )}
 
+                
+
             </div>
+
+            <Footer />
         </div> 
     );
 }

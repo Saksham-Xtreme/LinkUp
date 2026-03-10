@@ -2,7 +2,7 @@ import * as React from "react";
 import { Avatar, Button, CssBaseline, TextField, Paper, Box, Snackbar, Typography } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-
+import Footer from '../components/Footer';
 // 1. Changed import to useAuth
 import { useAuth } from "../contexts/AuthContext";
 import "../App.css";
@@ -122,11 +122,15 @@ export default function Authentication() {
                     </Box>
                 </Paper>
 
+                <Footer />
+
                 <Snackbar
                     open={open} autoHideDuration={4000} message={message}
                     onClose={() => setOpen(false)}
                 />
             </Box>
+
+            
         </ThemeProvider>
     );
 }

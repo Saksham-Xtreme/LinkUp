@@ -19,6 +19,7 @@ import ChatIcon from '@mui/icons-material/Chat';
 import CloseIcon from '@mui/icons-material/Close'; 
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from "../styles/videoComponent.module.css";
+import Footer from '../components/Footer';
 import { useAuth } from "../contexts/AuthContext";
 
 // Use environment variable, fallback to localhost for development if missing
@@ -586,7 +587,10 @@ export default function VideoMeet() {
                             </div>
                         ))}
                     </div>
+                    <Footer />
                 </div>
+
+                
             }
 
             <Snackbar
