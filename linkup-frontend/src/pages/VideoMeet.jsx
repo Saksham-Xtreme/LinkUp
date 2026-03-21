@@ -236,6 +236,7 @@ export default function VideoMeet() {
 
     const createConnection = (socketListId) => {
         if (connections[socketListId]) return;
+        if (socketListId === socketIdRef.current) return;
 
         connections[socketListId] = new RTCPeerConnection(peerConfigConnections);
         
@@ -331,6 +332,7 @@ export default function VideoMeet() {
                 const clientsArray = Array.isArray(clients) ? clients : [id];
 
                 clientsArray.forEach((socketListId) => {
+                    if (socketListId === socketIdRef.current) return;
                     createConnection(socketListId);
                 })
 
