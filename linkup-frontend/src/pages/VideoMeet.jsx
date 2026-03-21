@@ -315,53 +315,51 @@ export default function VideoMeet() {
             transports: ['websocket'],
             upgrade: false
         });
-
-        socketRef.current.on('signal', gotMessageFromServer)
-
-        socketRef.current.on('connect', () => {
-            socketIdRef.current = socketRef.current.id
-            socketRef.current.emit('join-call', window.location.href)
-            
-
-            socketRef.current.on('chat-message', addMessage)
-
-            socketRef.current.on('user-left', (id) => {
-                setVideos((videos) => videos.filter((video) => video.socketId !== id))
-            })
-
-            socketRef.current.on('user-joined', (id, clients) => {
-                const clientsArray = Array.isArray(clients) ? clients : [id];
-
-                clientsArray.forEach((socketListId) => {
-                    if (socketListId === socketIdRef.current) return;
-                    createConnection(socketListId);
-                })
-
-                if (id === socketIdRef.current) {
-                    for (let id2 in connections) {
-                        if (id2 === socketIdRef.current) continue
-
-                        try {
-                            if(window.localStream) {
-                                window.localStream.getTracks().forEach(track => {
-                                    connections[id2].addTrack(track, window.localStream);
-                                });
-                            }
-                        } catch (e) { }
-
-                        connections[id2].createOffer().then((description) => {
-                            connections[id2].setLocalDescription(description)
-                                .then(() => {
-                                    socketRef.current.emit('signal', id2, JSON.stringify({ 'sdp': connections[id2].localDescription }))
-                                })
-                                .catch(e => console.log(e))
-                        })
-                    }
+    
+        socketRef.current.on('signal', gotMessageFromServer);
+    
+        socketRef.current.on('chat-message', addMessage);
+    
+        socketRef.current.on('user-left', (id) => {
+            setVideos((videos) => videos.filter((video) => video.socketId !== id));
+        });
+    
+        socketRef.current.on('user-joined', (id, clients) => {
+            const clientsArray = Array.isArray(clients) ? clients : [id];
+    
+            clientsArray.forEach((socketListId) => {
+                if (socketListId === socketIdRef.current) return;
+                createConnection(socketListId);
+            });
+    
+            if (id === socketIdRef.current) {
+                for (let id2 in connections) {
+                    if (id2 === socketIdRef.current) continue;
+    
+                    try {
+                        if (window.localStream) {
+                            window.localStream.getTracks().forEach(track => {
+                                connections[id2].addTrack(track, window.localStream);
+                            });
+                        }
+                    } catch (e) { }
+    
+                    connections[id2].createOffer().then((description) => {
+                        connections[id2].setLocalDescription(description)
+                            .then(() => {
+                                socketRef.current.emit('signal', id2, JSON.stringify({ 'sdp': connections[id2].localDescription }));
+                            })
+                            .catch(e => console.log(e));
+                    });
                 }
-            })
-        })
+            }
+        });
+    
+        socketRef.current.on('connect', () => {
+            socketIdRef.current = socketRef.current.id;
+            socketRef.current.emit('join-call', window.location.href);
+        });
     }
-
     let silence = () => {
         let ctx = new AudioContext()
         let oscillator = ctx.createOscillator()
