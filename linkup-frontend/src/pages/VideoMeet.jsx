@@ -244,17 +244,17 @@ export default function VideoMeetComponent() {
         }
 
         connections[socketListId].ontrack = (event) => {
-            // Use the functional state update to guarantee we check the latest state
+            
             setVideos(prevVideos => {
                 let videoExists = prevVideos.find(video => video.socketId === socketListId);
         
                 if (videoExists) {
-                    // Update the stream if the video component already exists
+                    
                     return prevVideos.map(video =>
                         video.socketId === socketListId ? { ...video, stream: event.streams[0] } : video
                     );
                 } else {
-                    // Add the new video if it doesn't exist
+                   
                     return [...prevVideos, {
                         socketId: socketListId,
                         stream: event.streams[0],
