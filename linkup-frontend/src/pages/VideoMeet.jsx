@@ -21,7 +21,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import styles from "../styles/videoComponent.module.css";
 import { useAuth } from "../contexts/AuthContext";
 
-// Use environment variable, fallback to localhost for development if missing
 const server_url = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
 var connections = {};
@@ -31,6 +30,20 @@ const peerConfigConnections = {
         { "urls": "stun:stun.l.google.com:19302" }
     ]
 }
+
+const RemoteVideo = React.memo(({ socketId, stream }) => {
+    const ref = useRef(null);
+    useEffect(() => {
+        if (ref.current && stream) {
+            ref.current.srcObject = stream;
+        }
+    }, [stream]);
+    return (
+        <div>
+            <video ref={ref} autoPlay playsInline />
+        </div>
+    );
+});
 
 export default function VideoMeet() {
     const navigate = useNavigate(); 
@@ -69,51 +82,21 @@ export default function VideoMeet() {
         getPermissions();
     }, []);
 
-    let getDislayMedia = () => {
-        if (screen) {
-            if (navigator.mediaDevices.getDisplayMedia) {
-                navigator.mediaDevices.getDisplayMedia({ video: true, audio: true })
-                    .then(getDislayMediaSuccess)
-                    .then((stream) => { })
-                    .catch((e) => console.log(e))
-            }
-        }
-    }
-
-    const copyClick = () => {
-        navigator.clipboard.writeText(window.location.href);
-        setCopySuccess(true);
-    };
-
     const getPermissions = async () => {
         try {
-            const videoPermission = await navigator.mediaDevices.getUserMedia({ video: true });
-            if (videoPermission) {
-                setVideoAvailable(true);
-            } else {
-                setVideoAvailable(false);
-            }
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                .catch(() => navigator.mediaDevices.getUserMedia({ video: true, audio: false }))
+                .catch(() => navigator.mediaDevices.getUserMedia({ video: false, audio: true }))
+                .catch(() => null);
 
-            const audioPermission = await navigator.mediaDevices.getUserMedia({ audio: true });
-            if (audioPermission) {
-                setAudioAvailable(true);
-            } else {
-                setAudioAvailable(false);
-            }
+            setVideoAvailable(!!(stream?.getVideoTracks().length));
+            setAudioAvailable(!!(stream?.getAudioTracks().length));
+            setScreenAvailable(!!navigator.mediaDevices.getDisplayMedia);
 
-            if (navigator.mediaDevices.getDisplayMedia) {
-                setScreenAvailable(true);
-            } else {
-                setScreenAvailable(false);
-            }
-
-            if (videoAvailable || audioAvailable) {
-                const userMediaStream = await navigator.mediaDevices.getUserMedia({ video: videoAvailable, audio: audioAvailable });
-                if (userMediaStream) {
-                    window.localStream = userMediaStream;
-                    if (localVideoref.current) {
-                        localVideoref.current.srcObject = userMediaStream;
-                    }
+            if (stream) {
+                window.localStream = stream;
+                if (localVideoref.current) {
+                    localVideoref.current.srcObject = stream;
                 }
             }
         } catch (error) {
@@ -138,13 +121,12 @@ export default function VideoMeet() {
             window.localStream.getTracks().forEach(track => track.stop())
         } catch (e) { console.log(e) }
 
-        window.localStream = stream
-        localVideoref.current.srcObject = stream
+        window.localStream = stream;
+        localVideoref.current.srcObject = stream;
 
         for (let id in connections) {
-            if (id === socketIdRef.current) continue
+            if (id === socketIdRef.current) continue;
 
-            // FIX: Modern WebRTC Track implementation
             window.localStream.getTracks().forEach(track => {
                 connections[id].addTrack(track, window.localStream);
             });
@@ -172,7 +154,6 @@ export default function VideoMeet() {
             localVideoref.current.srcObject = window.localStream
 
             for (let id in connections) {
-                // FIX: Modern WebRTC Track implementation
                 window.localStream.getTracks().forEach(track => {
                     connections[id].addTrack(track, window.localStream);
                 });
@@ -202,18 +183,28 @@ export default function VideoMeet() {
         }
     }
 
+    let getDislayMedia = () => {
+        if (screen) {
+            if (navigator.mediaDevices.getDisplayMedia) {
+                navigator.mediaDevices.getDisplayMedia({ video: true, audio: true })
+                    .then(getDislayMediaSuccess)
+                    .then((stream) => { })
+                    .catch((e) => console.log(e))
+            }
+        }
+    }
+
     let getDislayMediaSuccess = (stream) => {
         try {
             window.localStream.getTracks().forEach(track => track.stop())
         } catch (e) { console.log(e) }
 
-        window.localStream = stream
-        localVideoref.current.srcObject = stream
+        window.localStream = stream;
+        localVideoref.current.srcObject = stream;
 
         for (let id in connections) {
-            if (id === socketIdRef.current) continue
+            if (id === socketIdRef.current) continue;
 
-            // FIX: Modern WebRTC Track implementation for screen share
             window.localStream.getTracks().forEach(track => {
                 connections[id].addTrack(track, window.localStream);
             });
@@ -244,7 +235,7 @@ export default function VideoMeet() {
     }
 
     const createConnection = (socketListId) => {
-        if (connections[socketListId]) return; 
+        if (connections[socketListId]) return;
 
         connections[socketListId] = new RTCPeerConnection(peerConfigConnections);
         
@@ -254,7 +245,6 @@ export default function VideoMeet() {
             }
         }
 
-        // Modern browsers use ontrack instead of onaddstream
         connections[socketListId].ontrack = (event) => {
             let videoExists = videoRef.current.find(video => video.socketId === socketListId);
 
@@ -282,7 +272,6 @@ export default function VideoMeet() {
             }
         };
 
-        // FIX: The ultimate track handler with a solid fallback
         if (window.localStream !== undefined && window.localStream !== null) {
             window.localStream.getTracks().forEach(track => {
                 connections[socketListId].addTrack(track, window.localStream);
@@ -321,8 +310,10 @@ export default function VideoMeet() {
     }
 
     let connectToSocketServer = () => {
-        // FIX: Removed { secure: false } for Render deployment
-        socketRef.current = io(server_url, { transports: ['websocket', 'polling'] });
+        socketRef.current = io(server_url, { 
+            transports: ['websocket'],
+            upgrade: false
+        });
 
         socketRef.current.on('signal', gotMessageFromServer)
 
@@ -347,7 +338,6 @@ export default function VideoMeet() {
                     for (let id2 in connections) {
                         if (id2 === socketIdRef.current) continue
 
-                        // FIX: Final legacy addStream replacement
                         try {
                             if(window.localStream) {
                                 window.localStream.getTracks().forEach(track => {
@@ -420,7 +410,7 @@ export default function VideoMeet() {
     };
 
     let sendMessage = () => {
-        if (message.trim() === "") return; 
+        if (message.trim() === "") return;
 
         socketRef.current.emit('chat-message', message, username);
         
@@ -432,14 +422,24 @@ export default function VideoMeet() {
         setMessage("");
     }
 
+    const copyClick = () => {
+        navigator.clipboard.writeText(window.location.href);
+        setCopySuccess(true);
+    };
+
     let connect = async () => {
         setAskForUsername(false);
+
+        if (window.localStream) {
+            window.localStream.getTracks().forEach(track => track.stop());
+            window.localStream = null;
+        }
+
         getMedia();
         
         if (url) {
             try {
                 await addToUserHistory(url);
-                console.log("Meeting logged to history");
             } catch (error) {
                 console.error("Could not log meeting:", error);
             }
@@ -571,25 +571,11 @@ export default function VideoMeet() {
 
                     <div className={styles.conferenceView}>
                         {videos.map((video) => (
-                            <div key={video.socketId}>
-                                <video
-                                    data-socket={video.socketId}
-                                    ref={ref => {
-                                        if (ref && video.stream) {
-                                            ref.srcObject = video.stream;
-                                        }
-                                    }}
-                                    autoPlay
-                                    playsInline 
-                                >
-                                </video>
-                            </div>
+                            <RemoteVideo key={video.socketId} socketId={video.socketId} stream={video.stream} />
                         ))}
                     </div>
                     
                 </div>
-
-                
             }
 
             <Snackbar
