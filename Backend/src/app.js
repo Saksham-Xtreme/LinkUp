@@ -45,6 +45,10 @@ app.use(express.urlencoded({limit : "40kb", extended : true}));
 app.use("/api/v1/users", userRoutes);
 app.use("/auth", authRoutes);
 
+app.get("/", (req, res) => {
+  res.send("Page is Working");
+});
+
 const connectionDb = async () => {
     try {
       await mongoose.connect(process.env.MONGO_URI);
