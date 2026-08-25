@@ -58,73 +58,65 @@ graph TD
 
 ---
 
-## 📂 Project Structure
+## 📂 Project Structure & Documentation
 
-```text
-linkup
-├── client (React)
-│   ├── src/hooks       # Custom WebRTC & Auth hooks
-│   ├── src/contexts    # Global State Management
-│   └── src/pages       # Lobby, Home, and Meeting Rooms
-└── server (Node.js)
-    ├── sockets/        # Socket.io event handlers
-    ├── models/         # MongoDB Schemas (User, History)
-    └── controllers/    # Business logic for Auth & Calls
+LinkUp is split into three main modules:
 
-```
+1. 💻 **[linkup-frontend](file:///Users/sakshamtripathi/Desktop/Video-Confrencing/linkup-frontend/README.md)** - React (Vite) client implementation utilizing WebRTC, WebSockets, and Material-UI (MUI).
+2. ⚙️ **[Backend](file:///Users/sakshamtripathi/Desktop/Video-Confrencing/Backend/README.md)** - Node.js/Express server and Socket.io signaling orchestrator.
+3. 📚 **[Notes](file:///Users/sakshamtripathi/Desktop/Video-Confrencing/Notes/README.md)** - Documentation covering video conferencing architectures, STUN/TURN setups, computer networking transport layers, and WebSockets.
 
 ---
 
 ## ⚡ Quick Start
 
-### 1. Clone & Install
-
+### 1. Clone the repository
 ```bash
 git clone https://github.com/Saksham-Xtreme/LinkUp.git
 cd LinkUp
-
 ```
 
-### 2. Setup Server
-
+### 2. Run the Backend Server
+Please view the detailed **[Backend Setup Guide](file:///Users/sakshamtripathi/Desktop/Video-Confrencing/Backend/README.md)**.
 ```bash
-cd server
+cd Backend
 npm install
-# Create .env with the keys listed below
+# Configure your .env file
 npm run dev
-
 ```
 
-### 3. Setup Client
-
+### 3. Run the Frontend Client
+Please view the detailed **[Frontend Setup Guide](file:///Users/sakshamtripathi/Desktop/Video-Confrencing/linkup-frontend/README.md)**.
 ```bash
-cd client
+cd linkup-frontend
 npm install
+# Configure your .env file
 npm run dev
-
 ```
 
 ---
 
-## 🔐 Environment Variables
+## 🔐 Environment Variables Summary
 
-Create a `.env` file in the `/server` directory:
+Detailed list of variables required to configure the system:
 
-```env
-PORT=8000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_random_secret_key
-GOOGLE_CLIENT_ID=your_google_id
-GOOGLE_CLIENT_SECRET=your_google_secret
+### Backend `.env`
+* `PORT` - The port on which the Express server listens (e.g., `8000`).
+* `MONGO_URI` - MongoDB database connection string.
+* `JWT_SECRET` - Random secret key for signing JWT login tokens.
+* `JWT_EXPIRES_IN` - Lifetime duration of the token (e.g., `7d`).
+* `CLIENT_URL` - Origin URL of the frontend (e.g., `http://localhost:5173`).
+* `GOOGLE_CLIENT_ID` - Client ID generated from Google Developer Console for Google Sign-In.
+* `GOOGLE_CLIENT_SECRET` - Client Secret generated from Google Developer Console.
 
-
-```
+### Frontend `.env`
+* `VITE_BACKEND_URL` - Endpoint of the running Backend server (e.g., `http://localhost:8000`).
 
 ---
 
 ## 👨‍💻 Author
 
-**Saksham Tripathi** *Full Stack Developer | Computer Science Engineering Student* [GitHub](https://www.google.com/search?q=https://github.com/Saksham-Xtreme) | [LinkedIn](https://www.google.com/search?q=https://www.linkedin.com/in/saksham-tripathi-303728282/)
+**Saksham Tripathi** *Full Stack Developer | Computer Science Engineering Student* [GitHub](https://github.com/Saksham-Xtreme) | [LinkedIn](https://www.linkedin.com/in/saksham-tripathi-303728282/)
 
 
 

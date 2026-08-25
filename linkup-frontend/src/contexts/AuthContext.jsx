@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
             if(request.status === httpStatus.OK) {
                 localStorage.setItem("token", request.data.token);
                 // Use React Router for smooth navigation instead of a full page reload
-                router("home"); 
+                router("/home"); 
             }
 
         } catch(err) {

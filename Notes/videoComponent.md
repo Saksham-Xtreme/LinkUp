@@ -79,3 +79,35 @@ This layer handles the visual representation and the supplementary data (like ch
 | **5** | **Render** | Map remote streams to dynamic `<video>` elements in the grid. |
 | **6** | **Chat** | Broadcast and receive text strings via the Socket `chat-message` event. |
 
+### Understanding SDP (Session Description Protocol)
+
+**SDP** stands for **Session Description Protocol**. It is not a transport protocol like TCP or UDP; rather, it is a **format** used to describe the parameters of a multimedia session.
+
+In the context of your **LinkUp** project, SDP acts as the "business card" or "proposal" that peers exchange during the WebRTC handshake to agree on how they will talk to each other.
+
+---
+
+### Why is SDP Used?
+
+SDP is essential because two computers on the internet often have different capabilities (different cameras, varying internet speeds, or supported video formats). SDP is used to find common ground through a process called **Negotiation**.
+
+It communicates several critical pieces of information:
+
+* **Media Types:** It specifies whether the session includes audio, video, or both.
+* **Codecs:** It lists the compression formats the browser supports (like **VP8**, **VP9**, or **H.264** for video).
+* **Network Transport:** It defines the protocol being used to move the data (usually **RTP/SAVPF** in WebRTC).
+* **Security:** It includes setup information for **DTLS** (Datagram Transport Layer Security) to ensure the video stream is encrypted.
+* **Timing:** It can define when a session starts and stops (though in live meetings, this is usually set to permanent).
+
+---
+
+### How SDP Works in Your Code
+
+In your `VideoMeet` component, the SDP exchange follows the **Offer/Answer** model:
+
+1. **The Offer:** One peer calls `connections[id].createOffer()`. This generates an SDP string containing all the media settings they want to use.
+2. **The Signal:** This SDP string is sent to the other peer via your Socket.io server using `socketRef.current.emit('signal', ...)`.
+3. **The Set Remote:** The receiving peer takes that string and calls `setRemoteDescription(new RTCSessionDescription(signal.sdp))`. This tells their browser: "Here is what the other person is capable of."
+4. **The Answer:** The receiver then calls `createAnswer()`, generating their own SDP, and sends it back to the first person to finalize the agreement.
+
+Without SDP, your peers would have no idea what resolution to send, which codec to use, or where to send the actual video packets, resulting in a failed connection.
